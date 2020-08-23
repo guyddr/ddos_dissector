@@ -1,3 +1,4 @@
 http://ddosdb.nl
 http://ddosdb.eu
 http://ddosdb.it
+http://1270.0.0.1
