@@ -1528,8 +1528,8 @@ if __name__ == '__main__':
             sys.exit(IOError("\nInput file not provided. Use '-f' for that."))
 
         if (not os.path.exists(filename)):
-            logger.error(IOError("File " + filename + " is not readble"))
-            sys.exit(IOError("File " + filename + " is not readble"))
+            logger.error(IOError("File " + filename + " is not readable"))
+            sys.exit(IOError("File " + filename + " is not readable"))
 
         # load network file
         n_type,df_ = load_file(args,filename)
