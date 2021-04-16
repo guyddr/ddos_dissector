@@ -41,6 +41,7 @@ from io import StringIO
 from datetime import datetime
 from argparse import RawTextHelpFormatter
 from hashlib import sha256
+from typing import List
 
 ###############################################################################
 ### Program settings
@@ -315,8 +316,7 @@ def flow_to_df(ret,filename):
     df = pd.read_json(data).fillna(NONE)
     df = df[['t_first', 't_last', 'proto', 'src4_addr', 'dst4_addr',
 	     'src_port', 'dst_port', 'fwd_status', 'tcp_flags',
-	     'src_tos', 'in_packets', 'in_bytes', 'icmp_type',
-	     'icmp_code', 
+	     'src_tos', 'in_packets', 'in_bytes',
 	 ]]
     df = df.rename(columns={'dst4_addr': 'ip_dst',
 			     'src4_addr': 'ip_src', 
@@ -324,12 +324,21 @@ def flow_to_df(ret,filename):
                              'dst_port': 'dstport',
                              't_start' : 'frame_time_epoch',
 			    })
-    df.dstport = df.dstport.astype(float).astype(int) 
-    df.srcport = df.srcport.astype(float).astype(int) 
+    df.dstport = df.dstport.astype(float).astype(int)
+    df.srcport = df.srcport.astype(float).astype(int)
+
+    def get_protocol_name(protocol_names: List, port_nr: int) -> str:
+        protocol_name = ''
+        try:
+            protocol_name = protocol_names[port_nr]
+        except KeyError:
+            pass
+
+        return protocol_name
 
     # convert protocol number to name
-    protocol_names = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")} 
-    df['proto'] = df['proto'].apply(lambda x: protocol_names[x])
+    protocol_names = {num:name[8:] for name,num in vars(socket).items() if name.startswith("IPPROTO")}
+    df['proto'] = df['proto'].apply(lambda x: get_protocol_name(protocol_names, x))
 
     # convert protocol/port to service
     def convert_protocol_service(row):
